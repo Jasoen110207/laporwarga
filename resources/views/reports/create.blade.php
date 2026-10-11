@@ -10,10 +10,15 @@
         <select id="category_id" name="category_id" required>
             <option value="">Pilih kategori</option>
             @foreach($categories as $c)
-                <option value="{{ $c->id }}" @selected(old('category_id') == $c->id)>{{ $c->name }}</option>
+                <option value="{{ $c->id }}" data-slug="{{ $c->slug }}" @selected(old('category_id') == $c->id)>{{ $c->name }}</option>
             @endforeach
         </select>
         @error('category_id') <div class="error">{{ $message }}</div> @enderror
+    </div>
+    <div class="field" id="other-wrapper" style="display:none">
+        <label for="other_category">Kategori lainnya</label>
+        <input id="other_category" name="other_category" value="{{ old('other_category') }}" maxlength="80" placeholder="Ketik kategori laporan">
+        @error('other_category') <div class="error">{{ $message }}</div> @enderror
     </div>
     <div class="field">
         <label for="title">Judul singkat</label>
@@ -39,4 +44,20 @@
     </div>
     <button class="btn" type="submit">Kirim laporan</button>
 </form>
+
+<script>
+    const select = document.getElementById('category_id');
+    const wrapper = document.getElementById('other-wrapper');
+    const other = document.getElementById('other_category');
+
+    function toggleOther() {
+        const isOther = select.selectedOptions[0]?.dataset.slug === 'lainnya';
+        wrapper.style.display = isOther ? 'block' : 'none';
+        other.required = isOther;
+        if (!isOther) other.value = '';
+    }
+
+    select.addEventListener('change', toggleOther);
+    toggleOther();
+</script>
 @endsection

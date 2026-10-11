@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OtherCategoryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Support\Facades\Route;
@@ -37,5 +38,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', EnsureRole::class . 
         Route::get('/kategori', [Admin\CategoryController::class, 'index'])->name('categories.index');
         Route::post('/kategori', [Admin\CategoryController::class, 'store'])->name('categories.store');
         Route::delete('/kategori/{category}', [Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
+
+        Route::get('/kategori-lainnya', [OtherCategoryController::class, 'index'])->name('other-categories');
+        Route::post('/kategori-lainnya/promosi', [OtherCategoryController::class, 'promote'])->name('other-categories.promote');
     });
 });
