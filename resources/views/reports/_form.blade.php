@@ -13,7 +13,7 @@
         </select>
         @error('category_id') <div class="error">{{ $message }}</div> @enderror
     </div>
-    <div class="field" id="other-wrapper" style="display:none">
+    <div class="field" id="other-wrapper" hidden>
         <label for="other_category">Kategori lainnya</label>
         <input id="other_category" name="other_category" value="{{ old('other_category', $r?->other_category) }}" maxlength="80" placeholder="Ketik kategori laporan">
         @error('other_category') <div class="error">{{ $message }}</div> @enderror
@@ -50,20 +50,4 @@
     </div>
 </form>
 
-<script>
-    (function () {
-        const select = document.getElementById('category_id');
-        const wrapper = document.getElementById('other-wrapper');
-        const other = document.getElementById('other_category');
-
-        function toggleOther() {
-            const isOther = select.selectedOptions[0]?.dataset.slug === 'lainnya';
-            wrapper.style.display = isOther ? 'block' : 'none';
-            other.required = isOther;
-            if (!isOther) other.value = '';
-        }
-
-        select.addEventListener('change', toggleOther);
-        toggleOther();
-    })();
-</script>
+<script src="{{ asset('js/form-toggle.js') }}" defer></script>
