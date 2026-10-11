@@ -44,7 +44,17 @@ class AuthController extends Controller
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
             'password' => 'required|string|min:8|confirmed',
+            'role' => ['required', 'in:warga,admin'],
+            'admin_code' => ['nullable', 'required_if:role,admin'],
         ]);
+
+        if ($data['role'] === 'admin') {
+    $code = config('laporwarga.admin_code');
+
+    if (!$code || !hash_equals((string) $code, (string) $request->admin_code)) {
+        return back()->withErrors(['admin_code' => 'Kode admin salah.'])->withInput($request->except('admin_code', 'password', 'password_confirmation'));
+    }
+}
 
         $user = User::create($data + ['role' => 'warga']);
 
