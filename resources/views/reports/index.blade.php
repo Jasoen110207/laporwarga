@@ -16,7 +16,7 @@
 @else
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Tiket</th><th>Judul</th><th>Kategori</th><th>Status</th><th>Tanggal</th></tr></thead>
+            <thead><tr><th>Tiket</th><th>Judul</th><th>Kategori</th><th>Status</th><th>Tanggal</th><th>Aksi</th></tr></thead>
             <tbody>
             @foreach($reports as $r)
                 <tr>
@@ -25,6 +25,19 @@
                     <td>{{ $r->category->name }}</td>
                     <td><span class="badge badge-{{ $r->status }}">{{ $r->status_label }}</span></td>
                     <td class="muted">{{ $r->created_at->translatedFormat('d M Y') }}</td>
+                    <td>
+                        @if($r->status === 'baru')
+                            <div class="row-actions">
+                                <a class="btn ghost small" href="{{ route('reports.edit', $r) }}">Ubah</a>
+                                <form method="POST" action="{{ route('reports.destroy', $r) }}" data-confirm="Hapus laporan {{ $r->ticket }}? Tindakan ini tidak bisa dibatalkan.">
+                                    @csrf @method('DELETE')
+                                    <button class="btn danger small" type="submit">Hapus</button>
+                                </form>
+                            </div>
+                        @else
+                            <span class="lock">Terkunci</span>
+                        @endif
+                    </td>
                 </tr>
             @endforeach
             </tbody>

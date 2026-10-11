@@ -2,23 +2,27 @@
 @section('title', 'Semua laporan')
 
 @section('content')
+@php
+    $current = request('status');
+    $isAdmin = auth()->user()->isAdmin();
+@endphp
 <div class="page-head"><h1>Semua laporan</h1></div>
 
-<div class="tabs">
-    <a class="btn ghost small" href="{{ route('admin.reports.index') }}">Semua</a>
+<div class="chips">
+    <a class="chip {{ $current ? '' : 'active' }}" href="{{ route('admin.reports.index') }}">Semua ({{ $counts->sum() }})</a>
     @foreach(\App\Models\Report::STATUSES as $key => $label)
-        <a class="btn ghost small" href="{{ route('admin.reports.index', ['status' => $key]) }}">{{ $label }} ({{ $counts[$key] ?? 0 }})</a>
+        <a class="chip {{ $current === $key ? 'active' : '' }}" href="{{ route('admin.reports.index', ['status' => $key]) }}">{{ $label }} ({{ $counts[$key] ?? 0 }})</a>
     @endforeach
 </div>
 
-<form class="filters" method="GET">
-    <div><label for="q">Cari</label><input id="q" name="q" value="{{ request('q') }}" placeholder="Judul, tiket, atau lokasi"></div>
+<form class="filters" method="GET" action="{{ route('admin.reports.index') }}">
+    <div><label for="q">Cari</label><input id="q" name="q" value="{{ request('q') }}" maxlength="100" placeholder="Judul, tiket, atau lokasi"></div>
     <div>
         <label for="status">Status</label>
         <select id="status" name="status">
             <option value="">Semua</option>
             @foreach(\App\Models\Report::STATUSES as $key => $label)
-                <option value="{{ $key }}" @selected(request('status') === $key)>{{ $label }}</option>
+                <option value="{{ $key }}" @selected($current === $key)>{{ $label }}</option>
             @endforeach
         </select>
     </div>
@@ -39,16 +43,43 @@
 @else
     <div class="table-wrap">
         <table>
-            <thead><tr><th>Tiket</th><th>Judul</th><th>Kategori</th><th>Pelapor</th><th>Status</th><th>Tanggal</th></tr></thead>
+            <thead><tr><th>Tiket</th><th>Judul</th><th>Kategori</th><th>Pelapor</th><th>Status</th><th>Ubah status</th><th>Aksi</th></tr></thead>
             <tbody>
             @foreach($reports as $r)
+                @php $locked = $r->isFinal() && ! $isAdmin; @endphp
                 <tr>
-                    <td class="ticket">{{ $r->ticket }}</td>
+                    <td class="ticket">{{ $r->ticket }}<br><span class="muted small" style="font-weight:400;letter-spacing:0">{{ $r->created_at->translatedFormat('d M Y') }}</span></td>
                     <td><a href="{{ route('admin.reports.show', $r) }}">{{ $r->title }}</a><br><span class="muted small">{{ $r->location }}</span></td>
                     <td>{{ $r->category->name }}</td>
                     <td>{{ $r->user->name }}</td>
                     <td><span class="badge badge-{{ $r->status }}">{{ $r->status_label }}</span></td>
-                    <td class="muted">{{ $r->created_at->translatedFormat('d M Y') }}</td>
+                    <td>
+                        @if($locked)
+                            <span class="lock">Terkunci</span>
+                        @else
+                            <form class="inline-form" method="POST" action="{{ route('admin.reports.update', $r) }}">
+                                @csrf @method('PUT')
+                                <input type="hidden" name="quick" value="1">
+                                <select name="status" aria-label="Status untuk {{ $r->ticket }}">
+                                    @foreach(\App\Models\Report::STATUSES as $key => $label)
+                                        <option value="{{ $key }}" @selected($r->status === $key)>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                                <button class="btn small" type="submit">Ubah</button>
+                            </form>
+                        @endif
+                    </td>
+                    <td>
+                        <div class="row-actions">
+                            <a class="btn ghost small" href="{{ route('admin.reports.show', $r) }}">Tanggapi</a>
+                            @if($isAdmin)
+                                <form method="POST" action="{{ route('admin.reports.destroy', $r) }}" data-confirm="Hapus laporan {{ $r->ticket }} beserta riwayatnya?">
+                                    @csrf @method('DELETE')
+                                    <button class="btn danger small" type="submit">Hapus</button>
+                                </form>
+                            @endif
+                        </div>
+                    </td>
                 </tr>
             @endforeach
             </tbody>

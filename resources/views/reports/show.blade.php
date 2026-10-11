@@ -14,6 +14,16 @@
         @if($report->photo)
             <img class="photo" src="{{ asset('storage/' . $report->photo) }}" alt="Foto pendukung laporan">
         @endif
+
+        @if($report->user_id === auth()->id() && $report->status === 'baru')
+            <div class="row-actions" style="margin-top:1.25rem">
+                <a class="btn ghost small" href="{{ route('reports.edit', $report) }}">Ubah laporan</a>
+                <form method="POST" action="{{ route('reports.destroy', $report) }}" data-confirm="Hapus laporan {{ $report->ticket }}? Tindakan ini tidak bisa dibatalkan.">
+                    @csrf @method('DELETE')
+                    <button class="btn danger small" type="submit">Hapus laporan</button>
+                </form>
+            </div>
+        @endif
     </div>
     <div>
         <div class="card" style="margin-bottom:1rem">

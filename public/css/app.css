@@ -115,3 +115,24 @@ tr:last-child td { border-bottom: 0; }
   .stub::before, .stub::after { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+/* ---- tambahan versi final ---- */
+.alert.error-box { background: #fbeae8; border-color: #e5b3ae; color: var(--danger); }
+.chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.chip { display: inline-block; padding: .35rem .9rem; border: 1.5px solid var(--line); border-radius: 99px; background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 600; font-size: .9rem; }
+.chip:hover { border-color: var(--primary); }
+.chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+.inline-form { display: flex; gap: .4rem; align-items: center; margin: 0; }
+.inline-form select { width: auto; padding: .3rem .5rem; font-size: .88rem; }
+.row-actions { display: flex; gap: .4rem; flex-wrap: wrap; align-items: center; }
+.btn.small { padding: .3rem .7rem; font-size: .85rem; }
+.lock { display: inline-block; font-size: .8rem; color: var(--muted); border: 1px dashed var(--line); border-radius: 6px; padding: .1rem .5rem; }
+.notice { background: #fdf3d9; border: 1px solid #e7c768; color: #7a5600; padding: .8rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
+.role-admin { background: #eadff7; border-color: #c3a8e4; color: #4a2578; }
+.role-petugas { background: #fdf3d9; border-color: #e7c768; color: #7a5600; }
+.role-warga { background: #eaf0f7; border-color: #b5c7de; color: #26466f; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85rem; }
+.stack > * + * { margin-top: 1rem; }
+.checkline { display: flex; gap: .5rem; align-items: center; font-weight: 400; }
+.checkline input { width: auto; }
+@media (max-width: 760px) { .inline-form { flex-wrap: wrap; } }

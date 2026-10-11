@@ -18,7 +18,7 @@
         </div>
         <div class="field">
             <label for="phone">Nomor HP (opsional)</label>
-            <input id="phone" name="phone" value="{{ old('phone') }}" autocomplete="tel">
+            <input id="phone" name="phone" value="{{ old('phone') }}" autocomplete="tel" placeholder="081234567890">
             @error('phone') <div class="error">{{ $message }}</div> @enderror
         </div>
         <div class="field">
@@ -28,7 +28,7 @@
         <div class="field">
             <label for="password">Kata sandi</label>
             <input id="password" type="password" name="password" required autocomplete="new-password">
-            <div class="hint">Minimal 8 karakter.</div>
+            <div class="hint">Minimal 8 karakter, mengandung huruf dan angka.</div>
             @error('password') <div class="error">{{ $message }}</div> @enderror
         </div>
         <div class="field">

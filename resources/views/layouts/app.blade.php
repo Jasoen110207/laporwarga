@@ -3,28 +3,31 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Lapor Warga')</title>
+    <title>@yield('title', 'Laporpak')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <script src="{{ asset('js/app.js') }}" defer></script>
 </head>
 <body>
 <header class="topbar">
     <div class="wrap bar">
-        <a class="brand" href="{{ route('home') }}">Lapor Warga</a>
+        <a class="brand" href="{{ route('home') }}">Laporpak</a>
         <nav aria-label="Menu utama">
             @auth
                 @if(auth()->user()->isStaff())
-                    <a href="{{ route('admin.reports.index') }}" @class(['active' => request()->routeIs('admin.reports.*')])>Semua laporan</a>
+                    <a href="{{ route('admin.reports.index') }}" @class(['active' => request()->routeIs('admin.reports.*')])>Laporan</a>
                     @if(auth()->user()->isAdmin())
                         <a href="{{ route('admin.categories.index') }}" @class(['active' => request()->routeIs('admin.categories.*')])>Kategori</a>
+                        <a href="{{ route('admin.users.index') }}" @class(['active' => request()->routeIs('admin.users.*')])>Pengguna</a>
+                        <a href="{{ route('admin.audit.index') }}" @class(['active' => request()->routeIs('admin.audit.*')])>Log aktivitas</a>
                     @endif
                 @else
                     <a href="{{ route('reports.index') }}" @class(['active' => request()->routeIs('reports.index')])>Laporan saya</a>
                     <a href="{{ route('reports.create') }}" @class(['active' => request()->routeIs('reports.create')])>Buat laporan</a>
                 @endif
-                <a href="{{ route('account.password') }}" @class(['active' => request()->routeIs('account.*')])>Ubah kata sandi</a>
+                <a href="{{ route('account.edit') }}" @class(['active' => request()->routeIs('account.*')])>Akun</a>
                 <form method="POST" action="{{ route('logout') }}" style="display:inline">
                     @csrf
                     <button class="link" type="submit">Keluar ({{ \Illuminate\Support\Str::words(auth()->user()->name, 1, '') }})</button>
@@ -42,15 +45,15 @@
         @if(session('success'))
             <div class="alert success" role="status">{{ session('success') }}</div>
         @endif
-        @if($errors->has('category'))
-            <div class="alert error-box" role="alert">{{ $errors->first('category') }}</div>
+        @if(session('error'))
+            <div class="alert error-box" role="alert">{{ session('error') }}</div>
         @endif
         @yield('content')
     </div>
 </main>
 
 <footer>
-    <div class="wrap">Lapor Warga &mdash; kanal pengaduan dan permintaan bantuan masyarakat.</div>
+    <div class="wrap">Laporpak &mdash; kanal pengaduan dan permintaan bantuan masyarakat.</div>
 </footer>
 </body>
 </html>

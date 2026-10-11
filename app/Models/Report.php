@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,6 +16,8 @@ class Report extends Model
         'selesai' => 'Selesai',
         'ditolak' => 'Ditolak',
     ];
+
+    public const FINAL_STATUSES = ['selesai', 'ditolak'];
 
     protected $fillable = ['ticket', 'user_id', 'category_id', 'title', 'description', 'location', 'photo', 'status'];
 
@@ -32,6 +35,30 @@ class Report extends Model
         } while (self::where('ticket', $ticket)->exists());
 
         return $ticket;
+    }
+
+    /**
+     * Pencarian aman: karakter ! % _ di-escape supaya tidak berfungsi sebagai wildcard.
+     * Kolom yang dicari adalah konstanta, input hanya masuk sebagai binding.
+     */
+    public function scopeSearch(Builder $query, ?string $term): Builder
+    {
+        if (blank($term)) {
+            return $query;
+        }
+
+        $like = '%' . str_replace(['!', '%', '_'], ['!!', '!%', '!_'], $term) . '%';
+
+        return $query->where(function (Builder $w) use ($like) {
+            foreach (['title', 'ticket', 'location'] as $column) {
+                $w->orWhereRaw("{$column} LIKE ? ESCAPE '!'", [$like]);
+            }
+        });
+    }
+
+    public function isFinal(): bool
+    {
+        return in_array($this->status, self::FINAL_STATUSES, true);
     }
 
     public function user(): BelongsTo

@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Laporpak - Pengaduan Masyarakat')
+
 @section('content')
 <section class="hero">
     <div>
