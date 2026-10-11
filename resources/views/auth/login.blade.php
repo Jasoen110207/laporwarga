@@ -18,6 +18,6 @@
         <div class="field"><label style="font-weight:400"><input type="checkbox" name="remember" style="width:auto"> Ingat saya</label></div>
         <button class="btn" type="submit">Masuk</button>
     </form>
-    <p class="muted small" style="margin-top:1rem">Belum punya akun? <a href="{{ route('register') }}">Daftar sebagai warga</a></p>
+    <p class="muted small" style="margin-top:1rem">Belum punya akun? <a href="{{ route('register') }}">Daftar sebagai...</a></p>
 </div>
 @endsection

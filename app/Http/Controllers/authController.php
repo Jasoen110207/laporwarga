@@ -65,16 +65,36 @@ class AuthController extends Controller
             'phone' => ['nullable', 'regex:/^(\+62|62|0)8[0-9]{8,12}$/'],
             'address' => 'nullable|string|max:255',
             'password' => ['required', 'confirmed', Password::min(8)->letters()->numbers()],
+            'role' => ['required', 'in:warga,admin'],
+            'admin_code' => ['nullable', 'required_if:role,admin'],
         ], [
             'phone.regex' => 'Format nomor HP tidak valid. Contoh: 081234567890.',
         ]);
 
-        // Peran selalu ditetapkan server, kolom "role" dari form diabaikan
-        $user = User::create($data + ['role' => 'warga']);
+        // Peran admin hanya diberikan jika kode admin benar. Selain itu selalu "warga".
+        $role = 'warga';
+
+        if ($data['role'] === 'admin') {
+            $code = config('laporwarga.admin_code');
+
+            if (! $code || ! hash_equals((string) $code, (string) $request->admin_code)) {
+                AuditLog::record('daftar_admin_ditolak', 'Kode admin salah: ' . $data['email'], null);
+
+                return back()
+                    ->withErrors(['admin_code' => 'Kode admin salah.'])
+                    ->withInput($request->except('admin_code', 'password', 'password_confirmation'));
+            }
+
+            $role = 'admin';
+        }
+
+        unset($data['role'], $data['admin_code']);
+
+        $user = User::create($data + ['role' => $role]);
 
         Auth::login($user);
         $request->session()->regenerate();
-        AuditLog::record('daftar', "Akun warga baru: {$user->email}");
+        AuditLog::record('daftar', "Akun {$role} baru: {$user->email}");
 
         return redirect()->route('reports.create')->with('success', 'Akun dibuat. Silakan tulis laporan pertama Anda.');
     }

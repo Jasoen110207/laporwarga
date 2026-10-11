@@ -4,6 +4,7 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\OtherCategoryController;
 use App\Http\Controllers\ReportController;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\SecurityHeaders;
@@ -54,6 +55,10 @@ Route::middleware(SecurityHeaders::class)->group(function () {
             Route::get('/kategori/{category}/ubah', [Admin\CategoryController::class, 'edit'])->name('categories.edit');
             Route::put('/kategori/{category}', [Admin\CategoryController::class, 'update'])->name('categories.update');
             Route::delete('/kategori/{category}', [Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
+
+            // Pantau kategori "Lainnya"
+            Route::get('/kategori-lainnya', [OtherCategoryController::class, 'index'])->name('other-categories');
+            Route::post('/kategori-lainnya/promosi', [OtherCategoryController::class, 'promote'])->name('other-categories.promote');
 
             Route::get('/pengguna', [Admin\UserController::class, 'index'])->name('users.index');
             Route::post('/pengguna', [Admin\UserController::class, 'store'])->name('users.store');

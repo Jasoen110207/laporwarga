@@ -19,7 +19,7 @@ class Report extends Model
 
     public const FINAL_STATUSES = ['selesai', 'ditolak'];
 
-    protected $fillable = ['ticket', 'user_id', 'category_id', 'title', 'description', 'location', 'photo', 'status'];
+    protected $fillable = ['ticket', 'user_id', 'category_id', 'other_category', 'title', 'description', 'location', 'photo', 'status'];
 
     protected static function booted(): void
     {
@@ -79,5 +79,14 @@ class Report extends Model
     public function getStatusLabelAttribute(): string
     {
         return self::STATUSES[$this->status] ?? $this->status;
+    }
+
+    public function getCategoryLabelAttribute(): string
+    {
+        if ($this->category?->slug === 'lainnya' && $this->other_category) {
+            return 'Lainnya: ' . $this->other_category;
+        }
+
+        return $this->category?->name ?? '-';
     }
 }

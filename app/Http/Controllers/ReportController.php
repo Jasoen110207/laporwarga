@@ -7,18 +7,41 @@ use App\Models\Category;
 use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ReportController extends Controller
 {
     private function rules(): array
     {
+        $otherId = Category::where('slug', 'lainnya')->value('id');
+
+        $other = ['nullable', 'string', 'max:80'];
+        if ($otherId) {
+            $other[] = 'required_if:category_id,' . $otherId;
+        }
+
         return [
             'category_id' => 'required|exists:categories,id',
+            'other_category' => $other,
             'title' => 'required|string|max:120',
             'description' => 'required|string|min:20|max:3000',
             'location' => 'required|string|max:200',
             'photo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ];
+    }
+
+    /** Simpan teks kategori hanya jika "Lainnya" dipilih, dan rapikan hurufnya. */
+    private function normalizeOther(array $data): array
+    {
+        $otherId = Category::where('slug', 'lainnya')->value('id');
+
+        if ((int) $data['category_id'] !== (int) $otherId) {
+            $data['other_category'] = null;
+        } elseif (!empty($data['other_category'])) {
+            $data['other_category'] = Str::title(trim($data['other_category']));
+        }
+
+        return $data;
     }
 
     /** Hanya pemilik yang boleh mengubah/menghapus, dan hanya selama status masih "baru". */
@@ -42,7 +65,7 @@ class ReportController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate($this->rules());
+        $data = $this->normalizeOther($request->validate($this->rules()));
 
         if ($request->hasFile('photo')) {
             $data['photo'] = $request->file('photo')->store('reports', 'public');
@@ -80,6 +103,7 @@ class ReportController extends Controller
 
         $data = $request->validate($this->rules() + ['remove_photo' => 'nullable|boolean']);
         unset($data['remove_photo']);
+        $data = $this->normalizeOther($data);
 
         if ($request->hasFile('photo')) {
             $this->deletePhoto($report);
